@@ -1,0 +1,2 @@
+RewriteRule ^sitemap\.xml$ sitemap.php [L]
+

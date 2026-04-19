@@ -1,0 +1,81 @@
+RewriteEngine On
+
+############################################
+# SECURITY & PERFORMANCE HEADERS
+############################################
+<IfModule mod_headers.c>
+    # Security headers
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+    # Remove server signature
+    ServerSignature Off
+</IfModule>
+
+# Disable directory browsing
+Options -Indexes
+
+############################################
+# REDIRECT TO HTTPS & NON-WWW
+############################################
+RewriteCond %{HTTP_HOST} ^www\.europeuncovered\.com$ [NC,OR]
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://europeuncovered.com/$1 [L,R=301]
+
+############################################
+# REMOVE index.php FROM URL
+############################################
+# Redirect direct requests to index.php
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /index\.(php|html?)\ HTTP/
+RewriteRule ^index\.(php|html?)$ / [R=301,L]
+
+# Remove trailing slashes from non-directories
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+############################################
+# PRETTY URLs
+############################################
+# Countries
+RewriteRule ^country/([a-zA-Z0-9-]+)/?$ db/country.php?slug=$1 [L,QSA]
+
+# About page
+RewriteRule ^about/?$ db/about.php [L]
+
+# Sitemap
+RewriteRule ^sitemap\.xml$ sitemap.php [L]
+
+# Ads.txt
+<Files "ads.txt">
+    Header set Content-Type "text/plain; charset=UTF-8"
+</Files>
+
+# Optional: route ads.txt via PHP
+# RewriteRule ^ads\.txt$ ads-handler.php [L]
+
+############################################
+# ERROR PAGES
+############################################
+ErrorDocument 404 /404.php
+ErrorDocument 403 /403.php
+ErrorDocument 500 /500.php
+
+############################################
+# DEFAULT FILE
+############################################
+DirectoryIndex index.php
+
+############################################
+# FILE PROTECTION
+############################################
+# Protect configuration files
+<FilesMatch "^(\.htaccess|\.htpasswd|\.env|config\.php)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Protect database folder (only direct access)
+<IfModule mod_rewrite.c>
+    RewriteCond %{THE_REQUEST} \s/db/ [NC]
+    RewriteRule ^db/ - [F,L]
+</IfModule>

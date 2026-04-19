@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+
+# Nu indexăm foldere interne / sensibile
+Disallow: /db/
+Disallow: /app/
+Disallow: /private/
+Disallow: /tmp/
+Disallow: /vendor/
+
+# Nu indexăm fișiere tehnice
+Disallow: /*.php$
+Disallow: /*.sql$
+Disallow: /README
+Disallow: /LICENSE
+
+# Permitem CSS / JS pentru a nu afecta SEO
+Allow: /*.css$
+Allow: /*.js$
+
+# Sitemap pentru indexare optimă
+Sitemap: https://europeuncovered.com/sitemap.xml
